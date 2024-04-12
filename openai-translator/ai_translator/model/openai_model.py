@@ -11,7 +11,10 @@ from openai import OpenAI
 class OpenAIModel(Model):
     def __init__(self, model: str, api_key: str):
         self.model = model
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url='https://chatgpt.caotudou.cn/openaiAPI'
+        )
 
     def make_request(self, prompt):
         attempts = 0
@@ -24,6 +27,7 @@ class OpenAIModel(Model):
                             {"role": "user", "content": prompt}
                         ]
                     )
+                    LOG.debug(f'Response: {response}')
                     translation = response.choices[0].message.content.strip()
                 else:
                     response = self.client.completions.create(
